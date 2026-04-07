@@ -5,6 +5,7 @@
 - **Students**: Ages 12-15
 - **Admin**: Game management and analytics
 
+
 ### Database Schema
 
 #### Enums
@@ -63,6 +64,120 @@ enum LeaderboardPeriod {
 | `Achievement`       | Achievement definitions              |
 | `PlayerAchievement` | Earned achievements                  |
 | `Leaderboard`       | Rankings (daily/weekly/all-time)     |
+
+#### Table Columns
+
+**Game**
+| Column | Type | Description |
+|--------|------|-------------|
+| id | String (UUID) | Primary key |
+| name | String | Game name |
+| description | String? | Game description |
+| type | GameType | MATH, LANGUAGE, SCIENCE, QUIZ, GENERAL |
+| difficulty | Difficulty | EASY, MEDIUM, HARD (default: EASY) |
+| icon | String? | Game icon URL |
+| coverImage | String? | Cover image URL |
+| isActive | Boolean | Active status (default: true) |
+| createdAt | DateTime | Creation timestamp |
+| updatedAt | DateTime | Last update timestamp |
+
+**Category**
+| Column | Type | Description |
+|--------|------|-------------|
+| id | String (UUID) | Primary key |
+| gameId | String | Foreign key to Game |
+| name | String | Category name |
+| description | String? | Category description |
+| icon | String? | Category icon |
+| order | Int | Display order |
+| isActive | Boolean | Active status |
+| createdAt | DateTime | Creation timestamp |
+| updatedAt | DateTime | Last update timestamp |
+
+**Mission**
+| Column | Type | Description |
+|--------|------|-------------|
+| id | String (UUID) | Primary key |
+| categoryId | String | Foreign key to Category |
+| gameId | String | Foreign key to Game |
+| title | String | Mission title |
+| description | String? | Mission description |
+| type | MissionType | LESSON, QUIZ, CHALLENGE, EXAM |
+| order | Int | Display order |
+| xpReward | Int | XP earned on completion |
+| timeLimit | Int? | Time limit in minutes (null = no limit) |
+| minScore | Int? | Minimum score to pass (%) |
+| isActive | Boolean | Active status |
+| createdAt | DateTime | Creation timestamp |
+| updatedAt | DateTime | Last update timestamp |
+
+**Question**
+| Column | Type | Description |
+|--------|------|-------------|
+| id | String (UUID) | Primary key |
+| missionId | String | Foreign key to Mission |
+| question | String | Question text |
+| type | QuestionType | MULTIPLE_CHOICE, TRUE_FALSE, SHORT_ANSWER |
+| options | Json? | Array of options for MULTIPLE_CHOICE |
+| answer | String | Correct answer |
+| explanation | String? | Explanation after answering |
+| order | Int | Display order |
+| points | Int | Points for this question |
+| createdAt | DateTime | Creation timestamp |
+| updatedAt | DateTime | Last update timestamp |
+
+**PlayerProgress**
+| Column | Type | Description |
+|--------|------|-------------|
+| id | String (UUID) | Primary key |
+| userId | String | Foreign key to User |
+| missionId | String | Foreign key to Mission |
+| status | ProgressStatus | NOT_STARTED, IN_PROGRESS, COMPLETED |
+| score | Int? | Score achieved (%) |
+| correctCount | Int? | Number of correct answers |
+| totalQuestions | Int? | Total questions in mission |
+| attempts | Int | Number of attempts |
+| startedAt | DateTime? | When mission was started |
+| completedAt | DateTime? | When mission was completed |
+| timeSpent | Int? | Time spent in seconds |
+| answers | Json? | User's answers { questionId: answer } |
+| createdAt | DateTime | Creation timestamp |
+| updatedAt | DateTime | Last update timestamp |
+
+**Achievement**
+| Column | Type | Description |
+|--------|------|-------------|
+| id | String (UUID) | Primary key |
+| name | String | Achievement name |
+| description | String? | Achievement description |
+| icon | String? | Achievement icon |
+| category | String? | Category (Math, Speed, Consistency) |
+| xpReward | Int | XP reward |
+| condition | Json? | Condition { type, value } |
+| isActive | Boolean | Active status |
+| createdAt | DateTime | Creation timestamp |
+
+**PlayerAchievement**
+| Column | Type | Description |
+|--------|------|-------------|
+| id | String (UUID) | Primary key |
+| userId | String | Foreign key to User |
+| achievementId | String | Foreign key to Achievement |
+| earnedAt | DateTime | When achievement was earned |
+
+**Leaderboard**
+| Column | Type | Description |
+|--------|------|-------------|
+| id | String (UUID) | Primary key |
+| gameId | String | Foreign key to Game |
+| period | LeaderboardPeriod | DAILY, WEEKLY, MONTHLY, ALL_TIME |
+| rank | Int | Rank position |
+| userId | String | Foreign key to User |
+| totalXP | Int | Total XP |
+| totalScore | Int | Total score |
+| missionsCompleted | Int | Number of missions completed |
+| updatedAt | DateTime | Last update timestamp |
+| createdAt | DateTime | Creation timestamp |
 
 ### Module Structure
 
